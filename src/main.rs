@@ -12,10 +12,10 @@ struct Blip {
 }
 
 fn main() {
-    let mut writer = csv::Writer::from_writer(io::stdout());
+
+    let mut writer = csv::Writer::from_path("/tmp/output.csv").unwrap();
 
     let paths = fs::read_dir("./blips-thoughtworks-vol21/").unwrap();
-
     paths
         .filter(is_valid_blip_file)
         .flat_map(|p|
@@ -30,6 +30,8 @@ fn main() {
                 Err(err) => eprintln!("Error processing blip {}", err)
             }
         );
+
+    writer.flush().unwrap();
 }
 
 fn deserialize_blip_yaml(reader: fs::File) -> serde_yaml::Result<Blip> {
