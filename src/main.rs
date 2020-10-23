@@ -1,8 +1,9 @@
 use serde::{Serialize, Deserialize};
-use std::{fs, io};
+use std::{fs, io, process};
 use std::path::Path;
+use std::error::Error;
 
-#[derive(Deserialize, Serialize, Debug, )]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all="camelCase")]
 struct Blip {
     name: String,
@@ -12,14 +13,11 @@ struct Blip {
     description: String,
 }
 
-fn main() {
+fn convert_from_blips_yaml_files_to_csv_file(input_folder: &Path, output_file: &Path)  -> Result<(), Box<dyn Error>>  {
 
-    let output = Path::new("/tmp/output.csv");
-    validate_output_file(output);
+    let mut writer = csv::Writer::from_path(output_file).unwrap();
 
-    let mut writer = csv::Writer::from_path(output).unwrap();
-
-    let paths = fs::read_dir("./blips-thoughtworks-vol21/").unwrap();
+    let paths = fs::read_dir(input_folder).unwrap();
     paths
         .filter(is_valid_blip_file)
         .flat_map(|p|
@@ -36,6 +34,8 @@ fn main() {
         );
 
     writer.flush().unwrap();
+
+    Ok(())
 }
 
 fn deserialize_blip_yaml(reader: fs::File) -> serde_yaml::Result<Blip> {
@@ -50,9 +50,23 @@ fn is_valid_blip_file(entry: &Result<fs::DirEntry, io::Error>) -> bool {
 }
 
 
+fn main() {
+
+    let path = Path::new("./blips-thoughtworks-vol21/");
+
+    let output = Path::new("/tmp/output.csv");
+    validate_output_file(output);
+
+    if let Err(err) = convert_from_blips_yaml_files_to_csv_file(path, output) {
+        println!("{}", err);
+        process::exit(1);
+    }
+
+}
+
 fn validate_output_file(output_file: &Path) {
     if output_file.exists() {
         eprintln!("ERROR: Output file '{}' already exists.", output_file.display());
-        std::process::exit(1); // should avoid multiple exits. TODO: convert everything to a Result and chain them
+        process::exit(1); // should avoid multiple exits. TODO: convert everything to a Result and chain them
     }
 }
