@@ -1,8 +1,0 @@
-name: The name of the blip
-quadrant: Techniques, Platforms, Tools, languages-and-frameworks
-ring: Adopt, Trial, Assess, Hold
-isNew: true
-description: |
-  The multiline text here, containing the long description of a unique item, added and edited collaborively.
-  Supports the same formatting as the standard thoughtworks radar spreadsheet.
-  Consider configuring your editor to hard-wrap .blip.yaml files at 120 chars

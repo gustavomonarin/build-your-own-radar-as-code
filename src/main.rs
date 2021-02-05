@@ -1,3 +1,9 @@
+#[macro_use]
+extern crate lazy_static;
+extern crate regex;
+
+mod blip_document;
+
 use structopt::StructOpt;
 use serde::{Serialize, Deserialize};
 use std::{fs, io, process};
@@ -54,7 +60,7 @@ fn is_valid_blip_file(entry: &Result<fs::DirEntry, io::Error>) -> bool {
 #[structopt(name = "blipnize",
 about = "A command to convert simple yaml blip files to the format expected by the thoughtworks radar")]
 struct CommandArgs {
-    /// The input dir containing the multiple blip yaml files. The files must have the extension .yaml
+    /// The input dir containing the multiple blip yaml files. The files must have the .md extension
     #[structopt(short = "d", long = "--input-dir")]
     input_dir: PathBuf,
 
@@ -64,20 +70,20 @@ struct CommandArgs {
 }
 
 fn main() {
-    let args : CommandArgs = CommandArgs::from_args();
+    let args: CommandArgs = CommandArgs::from_args();
     validate_input_dir(args.input_dir.borrow());
     validate_output_file(args.output_file.borrow());
 
     if let Err(err) = convert_from_blips_yaml_files_to_csv_file(
         args.input_dir.borrow(),
-        args.output_file.borrow()
+        args.output_file.borrow(),
     ) {
         println!("{}", err);
         process::exit(1);
     }
 }
 
-fn validate_input_dir(input_dir: &Path){
+fn validate_input_dir(input_dir: &Path) {
     if !input_dir.exists() {
         eprintln!("error: Input dir does not exists '{}' .", input_dir.display());
         process::exit(1); // should avoid multiple exits. TODO: convert everything to a Result and chain them
