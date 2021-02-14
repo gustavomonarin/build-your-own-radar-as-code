@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::io;
 use std::error::Error;
 
+use serde::{Serialize, Deserialize};
+
 use regex::Regex;
 use std::str::FromStr;
 
@@ -12,6 +14,8 @@ use std::str::FromStr;
 /// https://github.com/jekyll/jekyll/blob/master/lib/jekyll/document.rb#L13
 ///
 ///
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct BlipDocument {
     name: String,
     quadrant: String,
@@ -22,7 +26,7 @@ pub struct BlipDocument {
 
 
 impl BlipDocument {
-    fn parse<R>(mut reader: R) -> Result<BlipDocument, Box<dyn Error>>
+    pub(crate) fn parse<R>(mut reader: R) -> Result<BlipDocument, Box<dyn Error>>
         where
             R: io::Read,
     {
@@ -130,5 +134,4 @@ isNew: true
         assert_eq!(document.description, "".to_string());
         Ok(())
     }
-
 }
