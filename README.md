@@ -28,5 +28,11 @@ com/jekyll/jekyll/master/docs/_
 posts/2020-12-14-jekyll-4-2-0-released.markdown).
 
 # TODO
-
-Check how jenkyll handles these files Convert the yaml reader to Convert markdown to html
+* 
+* Connect the new blip document with the main
+* Make binary easily installable
+* Typed errors?
+* Markdown to html converter
+* Move the tests to a different area
+* Create an inner structure for the blip document front matter
+* Reduce of the String objects by slices and obect life tiems?
