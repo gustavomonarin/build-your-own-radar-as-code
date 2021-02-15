@@ -6,6 +6,7 @@ use serde::{Serialize, Deserialize};
 
 use regex::Regex;
 use std::str::FromStr;
+use pulldown_cmark::{Parser, html};
 
 /// Describes a blip document following the jekyll FrontMatter pattern.
 ///
@@ -24,17 +25,15 @@ pub struct BlipDocument {
     description: String,
 }
 
+lazy_static! {
+    static ref YAML_FRONT_MATTER_REGEXP: Regex = Regex::new(r"^(?s)\s*---(.*)---(.*)$").unwrap();
+}
 
 impl BlipDocument {
     pub(crate) fn parse<R>(mut reader: R) -> Result<BlipDocument, Box<dyn Error>>
         where
             R: io::Read,
     {
-        lazy_static! {
-            static ref YAML_FRONT_MATTER_REGEXP: Regex =
-                Regex::new(r"^(?s)\s*---(.*)---(.*)$").unwrap();
-        }
-
         let mut document_full_content = String::new();
         reader.read_to_string(&mut document_full_content)?;
 
@@ -46,7 +45,7 @@ impl BlipDocument {
                 HashMap::new(),
                 |m| serde_yaml::from_str(m.as_str()).unwrap());
 
-        let description = captures.get(2).map_or("", |m| m.as_str());
+        let description_markdown = captures.get(2);
 
         Ok(
             BlipDocument {
@@ -61,9 +60,12 @@ impl BlipDocument {
                     .to_string(),
                 is_new: FromStr::from_str(
                     front_matter.get("isNew")
-                        .expect("Missing mandatory field 'name'."))
-                    .unwrap(),
-                description: description.to_string(),
+                        .expect("Missing mandatory field 'name'."))?,
+                description: description_markdown.map_or("".to_string(), |md| {
+                    let mut description_html = String::new();
+                    html::push_html(&mut description_html, Parser::new(md.as_str()));
+                    description_html.replace("\n", "")
+                }),
             })
     }
 }
@@ -91,7 +93,7 @@ The content here
         assert_eq!(document.quadrant, "Techniques".to_string());
         assert_eq!(document.ring, "Assess".to_string());
         assert_eq!(document.is_new, true);
-        assert_eq!(document.description, "\nThe content here\n".to_string());
+        assert_eq!(document.description, "<p>The content here</p>".to_string());
         Ok(())
     }
 
