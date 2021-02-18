@@ -23,9 +23,7 @@ Blips are described as markdown files in order to be human-readable and easy mai
 To provide extra metadata, for instance quadrant and rings, the
 pattern [front matter](https://jekyllrb.com/docs/front-matter/) used by jenkyl to static pages is used. The front matter
 pattern simply consist of a small section at the beginning of the file with the required metadata in the yaml format
-followed by a body containing the full text [jenkyll example](https://raw.githubusercontent.
-com/jekyll/jekyll/master/docs/_
-posts/2020-12-14-jekyll-4-2-0-released.markdown).
+followed by a body containing the full text [jenkyll example](https://raw.githubusercontent. com/jekyll/jekyll/master/docs/_posts/2020-12-14-jekyll-4-2-0-released.markdown).
 
 # TODO
 * 
