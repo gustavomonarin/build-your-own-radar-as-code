@@ -1,5 +1,5 @@
 [package]
-name = "build-your-own-radar-as-code"
+name = "build_your_own_radar_as_code"
 version = "0.1.0"
 authors = ["gustavomonarin <gustavomonarin@gmail.com>"]
 edition = "2018"
@@ -7,7 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+lazy_static = "1.4.0"
+regex = "1.4.3"
 structopt = "0.3"
 csv = "1.1.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
+pulldown-cmark = "0.8"
