@@ -5,47 +5,37 @@ extern crate regex;
 mod blip_document;
 
 use structopt::StructOpt;
-use std::{fs, io, process};
+use std::{fs, process};
 use std::path::{Path, PathBuf};
 use std::error::Error;
 use std::borrow::Borrow;
+use glob::glob;
 use crate::blip_document::BlipDocument;
+use std::ops::Add;
 
 /// this should go to a "domain" area and leave the main only with command line handling
 fn convert_from_blips_yaml_files_to_csv_file(input_folder: &Path, output_file: &Path) -> Result<(), Box<dyn Error>> {
     let mut writer = csv::Writer::from_path(output_file)?;
 
-    let paths = fs::read_dir(input_folder)?;
-    paths
-        .filter(is_valid_blip_file)
-        .flat_map(|p|
-            p.map(|s|
-                fs::File::open(s.path())))
-        .flat_map(|f|
-            f.map(|f|
-                BlipDocument::parse(f)
-            )
-        )
-        .for_each(|b|
-            match b {
-                Ok(blip) => writer.serialize(blip).expect("Failed to write "),
-                Err(err) => eprintln!("Error processing blip {}", err)
-            }
-        );
+    let input_folder_string = input_folder.to_str()
+        .ok_or("")?.to_string();
+
+    let blips_files_pattern = input_folder_string.add("/**/*.md");
+
+    println!("Scanning for blip files using the pattern  {}", blips_files_pattern);
+
+    for entry in glob(blips_files_pattern.as_str())? {
+        let blip_file = fs::File::open(entry?)?;
+
+        let blip_document = BlipDocument::parse(blip_file)?;
+
+        writer.serialize(blip_document)?;
+    }
 
     writer.flush().unwrap();
 
     Ok(())
 }
-
-/// todo this should be associated with the blip document - input abstraction / trait
-fn is_valid_blip_file(entry: &Result<fs::DirEntry, io::Error>) -> bool {
-    entry.as_ref().map_or(
-        false,
-        |e| e.file_name().to_str().unwrap().ends_with(".md"),
-    )
-}
-/// todo: maybe also abstract the output format
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "blipnize",
