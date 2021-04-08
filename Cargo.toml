@@ -1,8 +1,15 @@
 [package]
-name = "build_your_own_radar_as_code"
+name = "build-your-own-radar-as-code"
+description = "Build your tech radar as code. Write human readable blips and use the tw open source radar to visualize."
 version = "0.2.0"
 authors = ["gustavomonarin <gustavomonarin@gmail.com>"]
 edition = "2018"
+readme = "README.md"
+homepage = "https://github.com/gustavomonarin/build-your-own-radar-as-code"
+repository = "https://github.com/gustavomonarin/build-your-own-radar-as-code"
+keywords = ["cli", "tech-radar"]
+categories = ["command-line-utilities"]
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
